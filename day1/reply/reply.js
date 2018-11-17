@@ -7,7 +7,7 @@ module.exports=(message)=>{
         fromUserName: message.ToUserName,
         createTime: Date.now(),
         msgType: 'text'
-    }
+    };
     let content='欢迎来到于效仟的公众号~';
     if(message.MsgType === 'text'){
         if(message.Content === '1'){
@@ -19,7 +19,7 @@ module.exports=(message)=>{
             options.title='小千公众号上线了~';
             options.description='点击进入小千空间看看~';
             options.picUrl='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542388376251&di=f3a916bafbeab555a6801cb4dc343284&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201512%2F08%2F20151208193102_eSywB.jpeg';
-            options.url='http://552134826@qq.com'
+            options.url='https://github.com/tunshiyu/weixin/tree/dev/day1'
         }
     }else if(message.MsgType === 'image'){
         content=`您发送的图片消息的url为${message.PicUrl},媒体ID为${message.MediaId}`;
@@ -38,6 +38,8 @@ module.exports=(message)=>{
             console.log(`${message.FromUserName}取消订阅！`)
         }else if(message.EventKey){
             content=`扫二维码关注,该二维码为${message.Ticket}`;
+        }else if (message.Event === 'CLICK'){
+            content=`您点击的是${message.EventKey}`;
         }
     }
     //将想要返回的内容绑定到options上
@@ -46,4 +48,4 @@ module.exports=(message)=>{
     const replyMessage=template(options);
     console.log(replyMessage);
     return replyMessage;
-}
+};

@@ -1,4 +1,6 @@
-module.exports=(options) => {
+
+//本模块将options包装
+module.exports= options => {
     let replyMessage = `<xml>
       <ToUserName><![CDATA[${options.toUserName}]]></ToUserName>
       <FromUserName><![CDATA[${options.fromUserName}]]></FromUserName>

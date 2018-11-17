@@ -6,7 +6,7 @@ const {getUserDataAsync,
     =require('../utils/tools');
 
 const {appID,appsecret,token}=require('../config');
-const reply=require('../wechat/reply');
+const reply=require('./reply');
 module.exports=() => {
     return async (req,res,next) => {
 
