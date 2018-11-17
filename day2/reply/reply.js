@@ -40,7 +40,15 @@ module.exports=(message)=>{
         }else if (message.Event === 'unsubscribe'){
             console.log(`${message.FromUserName}取消订阅！`)
         }else if(message.Event === 'CLICK'){
-            content=`您点击的菜单为：${message.EventKey}`;
+            if(message.EventKey === 'V1001'){
+                // content=`您点击的菜单为：${message.EventKey}`;
+                options.msgType ='news';
+                options.title='小千公众号上线了~';
+                options.description='点击进入小千空间看看~';
+                options.picUrl='https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1542388376251&di=f3a916bafbeab555a6801cb4dc343284&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201512%2F08%2F20151208193102_eSywB.jpeg';
+                options.url='https://github.com/tunshiyu/weixin/tree/dev/day1'
+            }
+
 
         }
     }
