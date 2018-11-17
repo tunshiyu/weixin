@@ -28,15 +28,71 @@
       - 发送请求，获取access_token，保存下来（txt）
  */
 
-const rp=require('request-promise-native');
-const {appID,appsecret}=require('../config')
+        const rp=require('request-promise-native');
+        const {readFile,writeFile}=require('fs');
 
-module.exports={
+        const {appID,appsecret}=require('../config')
 
-    //我想获取就得发送请求  https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
-    async getAccessToken () {
-   const url=`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appID}&secret=${appsecret}`;
-   const result=await rp({url,method:'GET',json:true});
-   return result;
-    }
-};
+
+        class wechat{
+            //我想获取就得发送请求  https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+            async getAccessToken(){
+                const url=`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appID}&secret=${appsecret}`;
+                const data=await rp({url,method:'GET',json:true});
+                data.expires_in=Date.now()+7200*1000-300*1000;
+                return data;
+            }
+            async saveAccessToken(filePath,accessToken){
+                return new Promise((resolve, reject) => {
+                    writeFile(filePath,JSON.stringify(accessToken),err => {
+                        if(!err){
+                            resolve();
+                        }else{
+                            reject('saveAccessToken方法出错了'+err);
+                        }
+                    })
+                })
+            }
+
+            async readAccessToken(filePath){
+                return new Promise((resolve, reject) => {
+                    readFile(filePath,(err,data) => {
+                    //    readFile返回的是buffer，先toString成JSON字符串再parse
+                        if (!err){
+                            resolve(JSON.parse(data.toString()));
+                        } else {
+                            reject('readAccessToken方法出错了'+err);
+                        }
+                    })
+                })
+            }
+
+            isValidAccessToken({expires_in}){
+                return Date.now() < expires_in;
+            }
+
+        }
+
+            module.exports=wechat;
+
+            (async ()=>{
+                const w=new wechat();
+                w.readAccessToken('./accessToken.txt')
+                    .then(async res => {
+                        //    说明有，先验证有效性
+                        if(w.isValidAccessToken(res)) {
+                            console.log(`未过期,access_token为：${res.toString()}`)
+                            console.log(res)
+                        }else {
+                            const accessToken=await w.getAccessToken();
+                            await w.saveAccessToken('./accessToken.txt',accessToken);
+                        }
+                    })
+                    .catch(
+                    async err => {
+                        //    说明没有，获取并保存
+                        const accessToken=await w.getAccessToken();
+                        await w.saveAccessToken('./accessToken.txt',accessToken);
+                    }
+                    )
+            })();
