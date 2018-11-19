@@ -6,6 +6,9 @@ module.exports={
         create:`${prefix}menu/create?`,
         delete:`${prefix}menu/delete?`
     },
+    ticket:{
+      get: `${prefix}ticket/getticket?`
+    },
     tags:{
         create: `${prefix}tags/create?`,
         delete:`${prefix}tags/delete?`,

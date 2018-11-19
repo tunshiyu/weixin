@@ -33,6 +33,7 @@
 
         const {appID,appsecret}=require('../config');
         const api=require('../config/api');
+        const {writeFileAsync,readFileAsync}=require('../utils/tools')
 
 
         class wechat{
@@ -55,15 +56,7 @@
              * @returns {Promise<*>}
              */
             async saveAccessToken(filePath,accessToken){
-                return new Promise((resolve, reject) => {
-                    writeFile(filePath,JSON.stringify(accessToken),err => {
-                        if(!err){
-                            resolve();
-                        }else{
-                            reject('saveAccessToken方法出错了'+err);
-                        }
-                    })
-                })
+                return writeFileAsync(filePath,accessToken);
             }
 
             /**
@@ -73,16 +66,7 @@
              */
 
             async readAccessToken(filePath){
-                return new Promise((resolve, reject) => {
-                    readFile(filePath,(err,data) => {
-                    //    readFile返回的是buffer，先toString成JSON字符串再parse
-                        if (!err){
-                            resolve(JSON.parse(data.toString()));
-                        } else {
-                            reject('readAccessToken方法出错了'+err);
-                        }
-                    })
-                })
+                return readFileAsync(filePath);
             }
 
             /**
@@ -129,6 +113,69 @@
                         return Promise.resolve(res);
                     })
             }
+
+
+            async getTicket(){
+                const {access_token}=await this.fetchAccessToken();
+                const url=`${api.ticket.get}access_token=${access_token}&type=jsapi`;
+                const data=await rp({url,method:'GET',json:true});
+                return {
+                    ticket:data.ticket,
+                    ticket_expires_in:Date.now()+7200*1000-300*1000
+                }
+            }
+
+
+            async saveTicket(filePath,ticket){
+                return writeFileAsync(filePath,ticket);
+            }
+
+
+            async readTicket(filePath){
+                return readFileAsync(filePath);
+            }
+
+
+            isValidTicket({ticket_expires_in}){
+                return Date.now() < ticket_expires_in;
+            }
+
+
+            async fetchTicket(){
+                if(this.ticket && this.ticket_expires_in && this.isValidTicket(this.ticket)){
+                    //    如果有说明this上已经存在，直接返回
+                    return Promise.resolve({ticket:this.ticket,ticket_expires_in:this.ticket_expires_in});
+                }
+                return this.readTicket('./ticket.txt')
+                    .then(async res => {
+                        //    说明有，先验证有效性
+                        if(this.isValidTicket(res)) {
+                            // console.log(`未过期,access_token为：${res.toString()}`)
+                            return res;
+                        }else {
+                            const ticket=await this.getTicket();
+                            await this.saveTicket('./ticket.txt',ticket);
+                            return ticket;
+                        }
+                    })
+                    .catch(
+                        async err => {
+                            //    说明没有，获取并保存
+                            const ticket=await this.getTicket();
+                            await this.saveTicket('./ticket.txt',ticket);
+                            return ticket;
+                        }
+                    )
+                    .then(res => {
+                        this.ticket=res.ticket;
+                        this.ticket_expires_in=res.ticket_expires_in;
+                        return Promise.resolve(res);
+                    })
+            }
+
+
+
+
 
             /**
              * 创建自定义菜单
@@ -302,12 +349,14 @@
             module.exports=wechat;
 
             (async ()=>{
-                const w=new wechat();
-                // const accessToken=await w.fetchAccessToken();
-                // console.log(accessToken);
+                /*const w=new wechat();
+                const a=await w.fetchTicket();
+                // const a=await w.getTicket();
+                console.log(a);*/
+
                 //***********删除创建菜单*********
 
-              /* let a=await w.deleteMenu();
+            /*   let a=await w.deleteMenu();
                 console.log(a);
                 a=await w.createMenu(require('./menu'));
                 console.log(a);*/
@@ -324,7 +373,7 @@
                 console.log('用户基本信息:'+JSON.stringify(a));*/
 
                 //***********全体推送 需要上传图片的MidiaID***********
-              /*  w.sendAll({
+               /* w.sendAll({
                     "filter":{
                         "is_to_all":false,
                         "tag_id":2
