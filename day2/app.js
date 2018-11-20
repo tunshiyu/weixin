@@ -11,13 +11,11 @@ app.set('views','views');
 app.set('view engine','ejs');
 
 app.get('/search',async (req,res) => {
-    //获取四个参数
+    //获取加密算法的四个参数
     const w = new Wechat();
     const {ticket} = await w.fetchTicket();
-
     const  timestamp = parseInt(Date.now()/1000);
     const noncestr = Math.random().toString().split('.')[1];
-
     const arr = [
         `noncestr=${noncestr}`,
         `jsapi_ticket=${ticket}`,
@@ -34,7 +32,6 @@ app.get('/search',async (req,res) => {
         timestamp
     });
 });
-
 
 //处理请求
 app.use(handleRequest());
