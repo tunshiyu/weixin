@@ -14,7 +14,18 @@ const trailersSchema = new mongoose.Schema({
     image: String,
     summary: String,
     src: String,
-    doubanId: String
+    doubanId: String,
+    coverKey: String,
+    imageKey: String,
+    videoKey: String,
+    createTime:{
+        type:Date,
+        default:Date.now()
+    },
+    updateTime:{
+        type: Date,
+        default: Date.now()
+    }
 })
 
 const Trailers = mongoose.model('trailers', trailersSchema);

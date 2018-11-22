@@ -1,3 +1,4 @@
+const {url}=require('../config');
 
 module.exports={
     "button":[
@@ -7,22 +8,32 @@ module.exports={
             "key":"V1001"
         },
         {
-            "name":"豆瓣预告片",
+            "name":"戳我啊👈",
             "sub_button":[
                 {
                     "type":"view",
-                    "name":"搜索",
-                    "url":"http://www.douban.com/"
+                    "name":"预告片🎥",
+                    "url": `${url}/movie`
                 },
                 {
-                    "type": "pic_photo_or_album",
-                    "name": "拍照或者相册发图",
-                    "key": "rselfmenu_1_1",
-                    "sub_button": [ ]
-                }, {
+                    "type":"view",
+                    "name":"语音识别🎤",
+                    "url":`${url}/search`
+                },
+                {
+                    "type": "click",
+                    "name": "帮助",
+                    "key": "help",
+                },
+                {
+                    "name": "豆瓣官网",
+                    "type": "view",
+                    "url": "http://www.douban.com"
+                },
+                {
                     "name": "发送位置",
                     "type": "location_select",
                     "key": "rselfmenu_2_0"
-                }, ]
+                }]
         }]
 }

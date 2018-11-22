@@ -35,7 +35,7 @@ module.exports=() => {
             //拿到可以使用的JS数据
             const message=fomatJS(jsData);
             //    自动回复（需要回复一个XML   内容通过reply，reply内部调用template加工成各个类型的XML）
-            const replyMessage=reply(message);
+            const replyMessage=await reply(message);
             res.send(replyMessage);
 
         }else{

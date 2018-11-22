@@ -1,5 +1,6 @@
 const {parseString}=require('xml2js');
 const {writeFile,readFile}=require('fs');
+const {resolve} = require('path');
 
 module.exports={
     getUserDataAsync (req) {
@@ -37,8 +38,9 @@ module.exports={
 
     },
     writeFileAsync(filePath,data){
+        const path=resolve(__dirname,'../wechat',filePath);
         return new Promise((resolve, reject) => {
-            writeFile(filePath,JSON.stringify(data),err => {
+            writeFile(path,JSON.stringify(data),err => {
                 if(!err){
                     resolve();
                 }else{
@@ -48,8 +50,9 @@ module.exports={
         })
     },
     readFileAsync(filePath){
+        const path=resolve(__dirname,'../wechat',filePath);
         return new Promise((resolve, reject) => {
-            readFile(filePath,(err,data) => {
+            readFile(path,(err,data) => {
                 //    readFile返回的是buffer，先toString成JSON字符串再parse
                 if (!err){
                     resolve(JSON.parse(data.toString()));

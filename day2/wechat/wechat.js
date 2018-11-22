@@ -350,13 +350,13 @@
 
             (async ()=>{
                 const w=new wechat();
-                const a=await w.fetchTicket();
+                // const a=await w.fetchTicket();
                 // const a=await w.getTicket();
-                console.log(a);
+                // console.log(a);
 
                 //***********删除创建菜单*********
 
-            /*   let a=await w.deleteMenu();
+             /*  let a=await w.deleteMenu();
                 console.log(a);
                 a=await w.createMenu(require('./menu'));
                 console.log(a);*/
